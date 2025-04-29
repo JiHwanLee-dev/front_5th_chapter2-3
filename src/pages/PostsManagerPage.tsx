@@ -17,13 +17,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
   Textarea,
+  Pagination,
 } from "../shared/ui"
 import { PostList } from "../entities/post/ui"
 import { CommentList } from "../entities/comment/ui"
@@ -58,6 +53,9 @@ const PostsManager = () => {
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
   const [showUserModal, setShowUserModal] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
+
+  // 페이지네이션 상태를 계산 (skip을 currentPage로 변환)
+  const currentPage = Math.floor(skip / limit)
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -427,30 +425,13 @@ const PostsManager = () => {
           )}
 
           {/* 페이지네이션 */}
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <span>표시</span>
-              <Select value={limit.toString()} onValueChange={(value) => setLimit(Number(value))}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="10" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                </SelectContent>
-              </Select>
-              <span>항목</span>
-            </div>
-            <div className="flex gap-2">
-              <Button disabled={skip === 0} onClick={() => setSkip(Math.max(0, skip - limit))}>
-                이전
-              </Button>
-              <Button disabled={skip + limit >= total} onClick={() => setSkip(skip + limit)}>
-                다음
-              </Button>
-            </div>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            pageSize={limit}
+            total={total}
+            onPageChange={(page) => setSkip(page * limit)}
+            onPageSizeChange={setLimit}
+          />
         </div>
       </CardContent>
 

@@ -5,6 +5,8 @@ import { Textarea } from "./textarea"
 import { Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectItem } from "./select"
 import { Dialog, DialogTrigger, DialogPortal, DialogOverlay, DialogContent, DialogHeader, DialogTitle } from "./dialog"
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "./table"
+import { Pagination } from "./pagination"
+import { PageSizeSelect } from "./pagination"
 
 // Re-export explicitly
 export {
@@ -34,4 +36,6 @@ export {
   TableRow,
   TableHead,
   TableCell,
+  Pagination,
+  PageSizeSelect,
 }
