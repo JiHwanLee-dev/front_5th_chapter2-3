@@ -2,6 +2,7 @@ import React from "react"
 import { TableRow, TableCell, Button } from "../../../shared/ui"
 import { ThumbsUp, ThumbsDown, MessageSquare, Edit2, Trash2 } from "lucide-react"
 import { Post } from "../model/types"
+import { UserAvatar } from "../../user/ui/UserAvatar"
 
 interface PostCardProps {
   post: Post
@@ -56,10 +57,7 @@ const PostCard = ({
         </div>
       </TableCell>
       <TableCell>
-        <div className="flex items-center space-x-2 cursor-pointer" onClick={() => onUserSelect(post.author)}>
-          <img src={post.author?.image} alt={post.author?.username} className="w-8 h-8 rounded-full" />
-          <span>{post.author?.username}</span>
-        </div>
+        <UserAvatar user={post.author} onClick={onUserSelect} />
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">
