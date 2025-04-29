@@ -27,6 +27,7 @@ import {
 } from "../shared/ui"
 import { PostList } from "../entities/post/ui"
 import { CommentList } from "../entities/comment/ui"
+import { TagSelect } from "../entities/tag/ui/TagSelect"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -372,26 +373,14 @@ const PostsManager = () => {
                 />
               </div>
             </div>
-            <Select
-              value={selectedTag}
-              onValueChange={(value) => {
-                setSelectedTag(value)
-                fetchPostsByTag(value)
-                updateURL()
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="태그 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">모든 태그</SelectItem>
-                {tags.map((tag) => (
-                  <SelectItem key={tag.url} value={tag.slug}>
-                    {tag.slug}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <TagSelect
+              tags={tags}
+              selectedTag={selectedTag}
+              onTagSelect={setSelectedTag}
+              updateURL={updateURL}
+              fetchPostsByTag={fetchPostsByTag}
+            />
+
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="정렬 기준" />
