@@ -538,12 +538,12 @@ const PostsManager = () => {
                 setNewComment((prev) => ({ ...prev, postId }))
                 setShowAddCommentDialog(true)
               }}
-              onLike={likeComment}
-              onEdit={(comment) => {
+              onLikeComment={likeComment}
+              onEditComment={(comment) => {
                 setSelectedComment(comment)
                 setShowEditCommentDialog(true)
               }}
-              onDelete={deleteComment}
+              onDeleteComment={deleteComment}
             />
           </div>
         </DialogContent>
