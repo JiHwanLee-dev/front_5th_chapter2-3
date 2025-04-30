@@ -3,7 +3,7 @@ import { FC } from "react"
 import { Table, TableHeader, TableBody, TableRow, TableHead } from "../../../shared/ui"
 import { Post } from "../model/types"
 import PostCard from "./PostCard"
-
+import usePostStore from "../model/postStore"
 interface Author {
   id: number
   username: string
@@ -11,7 +11,6 @@ interface Author {
 }
 
 interface PostListProps {
-  posts: Post[]
   searchQuery: string
   selectedTag: string
   highlightText: (text: string, highlight: string) => React.ReactNode
@@ -24,7 +23,6 @@ interface PostListProps {
 }
 
 export const PostList: FC<PostListProps> = ({
-  posts,
   searchQuery,
   selectedTag,
   loading = false,
@@ -36,6 +34,7 @@ export const PostList: FC<PostListProps> = ({
   onUserSelect,
   updateURL,
 }) => {
+  const { posts } = usePostStore()
   return (
     <Table>
       <TableHeader>

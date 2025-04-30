@@ -3,7 +3,7 @@ import { fetchPostsApi } from "../api/postApi"
 import { fetchUsersApi } from "../api/userApi"
 import { useEffect } from "react"
 import { Post } from "../../../entities/post/model/types"
-
+import usePostStore from "../../../entities/post/model/postStore"
 /**
  * 게시물 목록 및 사용자 정보를 가져오고 결합하는 커스텀 훅
  */
@@ -11,7 +11,6 @@ export const usePostsWithUsers = (
   limit: number,
   skip: number,
   selectedTag: string | null,
-  setPosts: (posts: Post[]) => void,
   setTotal: (total: number) => void,
   setLoading: (loading: boolean) => void,
 ) => {
@@ -21,6 +20,7 @@ export const usePostsWithUsers = (
     queryFn: () => fetchPostsApi(limit, skip),
     enabled: !selectedTag,
   })
+  const { setPosts } = usePostStore()
 
   // 사용자 쿼리
   const usersQuery = useQuery({
