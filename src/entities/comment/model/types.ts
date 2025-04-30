@@ -3,7 +3,7 @@ export interface Comment {
   postId: number
   body: string
   likes: number
-  user: {
+  user?: {
     id: number
     username: string
   }

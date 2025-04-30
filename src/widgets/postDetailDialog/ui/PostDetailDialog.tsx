@@ -8,7 +8,7 @@ import { Comment } from "../../../entities/comment/model/types"
 interface PostDetailDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  post: Post | null
+  post: Partial<Post> | null
   comments: Comment[] | undefined
   searchQuery: string
   highlightText: (text: string, highlight: string) => React.ReactNode
@@ -36,20 +36,22 @@ export const PostDetailDialog: FC<PostDetailDialogProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>{highlightText(post.title, searchQuery)}</DialogTitle>
+          <DialogTitle>{highlightText(post.title || "", searchQuery)}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <p>{highlightText(post.body, searchQuery)}</p>
-          <CommentList
-            comments={comments}
-            postId={post.id}
-            searchQuery={searchQuery}
-            highlightText={highlightText}
-            onAddComment={onAddComment}
-            onLikeComment={onLikeComment}
-            onEditComment={onEditComment}
-            onDeleteComment={onDeleteComment}
-          />
+          <p>{highlightText(post.body || "", searchQuery)}</p>
+          {post.id !== undefined && (
+            <CommentList
+              comments={comments}
+              postId={post.id}
+              searchQuery={searchQuery}
+              highlightText={highlightText}
+              onAddComment={onAddComment}
+              onLikeComment={onLikeComment}
+              onEditComment={onEditComment}
+              onDeleteComment={onDeleteComment}
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>

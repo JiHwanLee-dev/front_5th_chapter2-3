@@ -1,9 +1,14 @@
 import React from "react"
 import { FC } from "react"
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Button } from "../../../shared/ui"
-import { ThumbsUp, ThumbsDown, MessageSquare, Edit2, Trash2 } from "lucide-react"
+import { Table, TableHeader, TableBody, TableRow, TableHead } from "../../../shared/ui"
 import { Post } from "../model/types"
 import PostCard from "./PostCard"
+
+interface Author {
+  id: number
+  username: string
+  image?: string
+}
 
 interface PostListProps {
   posts: Post[]
@@ -14,7 +19,7 @@ interface PostListProps {
   onViewDetail: (post: Post) => void
   onEdit: (post: Post) => void
   onDelete: (id: number) => void
-  onUserSelect: (user: any) => void
+  onUserSelect: (user: Author) => void
   updateURL: () => void
 }
 

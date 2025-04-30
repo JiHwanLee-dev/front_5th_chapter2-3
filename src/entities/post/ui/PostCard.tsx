@@ -2,7 +2,12 @@ import React from "react"
 import { TableRow, TableCell, Button } from "../../../shared/ui"
 import { ThumbsUp, ThumbsDown, MessageSquare, Edit2, Trash2 } from "lucide-react"
 import { Post } from "../model/types"
-import { UserAvatar } from "../../user/ui/UserAvatar"
+
+interface Author {
+  id: number
+  username: string
+  image?: string
+}
 
 interface PostCardProps {
   post: Post
@@ -13,7 +18,7 @@ interface PostCardProps {
   onViewDetail: (post: Post) => void
   onEdit: (post: Post) => void
   onDelete: (id: number) => void
-  onUserSelect: (user: any) => void
+  onUserSelect: (user: Author) => void
   updateURL: () => void
 }
 
@@ -56,8 +61,16 @@ const PostCard = ({
           </div>
         </div>
       </TableCell>
+      {/* 이 부분을 사용자 정보로 따로 떄네서 표시 ? */}
       <TableCell>
-        <UserAvatar user={post.author} onClick={onUserSelect} />
+        {/* <UserAvatar user={post.author} onClick={onUserSelect} /> */}
+        <div
+          className="flex items-center space-x-2 cursor-pointer"
+          onClick={() => post.author && onUserSelect(post.author)}
+        >
+          <img src={post.author?.image} alt={post.author?.username} className="w-8 h-8 rounded-full" />
+          <span>{post.author?.username}</span>
+        </div>
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2">

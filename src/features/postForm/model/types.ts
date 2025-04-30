@@ -14,7 +14,7 @@ export interface PostFormProps {
 export interface PostFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSubmitSuccess?: (data: any) => void
+  onSubmitSuccess?: (data: PostFormData) => void
   initialData?: Partial<PostFormData>
   isEdit?: boolean
   title?: string

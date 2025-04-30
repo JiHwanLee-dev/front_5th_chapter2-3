@@ -9,7 +9,7 @@ interface CommentFormDialogProps {
   onOpenChange: (open: boolean) => void
   title: string
   formData: Partial<CommentFormData>
-  onChangeFormData: (name: string, value: any) => void
+  onChangeFormData: (name: string, value: string | number) => void
   onSubmit: () => void
   isEdit?: boolean
 }

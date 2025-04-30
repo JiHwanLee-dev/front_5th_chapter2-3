@@ -5,7 +5,7 @@ import { PostFormData } from "../model/types"
 
 interface PostFormProps {
   data: Partial<PostFormData>
-  onChange: (name: string, value: any) => void
+  onChange: (name: string, value: string | number) => void
   onSubmit: () => void
   isEdit?: boolean // 추가/수정 모드 구분을 위한 prop
 }
@@ -15,7 +15,7 @@ export const PostForm: FC<PostFormProps> = ({ data, onChange, onSubmit, isEdit =
   console.log("data: ", data)
   console.log("data: ", isEdit)
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     onChange(name, name === "userId" ? Number(value) : value)
   }

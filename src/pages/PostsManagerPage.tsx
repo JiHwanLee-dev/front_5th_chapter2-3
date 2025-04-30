@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 import { useLocation, useNavigate } from "react-router-dom"
 import {
   Button,
@@ -7,27 +7,23 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Textarea,
   Pagination,
 } from "../shared/ui"
 import { PostList } from "../entities/post/ui"
-import { CommentList } from "../entities/comment/ui"
 import { TagSelect } from "../entities/tag/ui/TagSelect"
-import { UserDetails } from "../entities/user/ui/UserDetails"
 import { PostFormDialog } from "../widgets/postFormDialog/ui/PostFormDialog"
-import { CommentFormDialog } from "../widgets/commentFornDialog/ui/CommentFormDialog"
+import { CommentFormDialog } from "../widgets/commentFormDialog/ui/CommentFormDialog"
 import { PostDetailDialog } from "../widgets/postDetailDialog/ui/PostDetailDialog"
-import { UserDetailDialog } from "../widgets/useDetailDIalog/ui/UserDetailDialog"
+import { UserDetailDialog } from "../widgets/useDetailDialog/ui/UserDetailDialog"
+
+import { Comment } from "../entities/comment/model/types"
+import { Post } from "../entities/post/model/types"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -35,12 +31,12 @@ const PostsManager = () => {
   const queryParams = new URLSearchParams(location.search)
 
   // 상태 관리
-  const [posts, setPosts] = useState([])
+  const [posts, setPosts] = useState<Post[]>([])
   const [total, setTotal] = useState(0)
   const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
   const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"))
   const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
-  const [selectedPost, setSelectedPost] = useState(null)
+  const [selectedPost, setSelectedPost] = useState<Partial<Post> | null>(null)
   const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
   const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc")
   const [showAddDialog, setShowAddDialog] = useState(false)
@@ -49,9 +45,13 @@ const PostsManager = () => {
   const [loading, setLoading] = useState(false)
   const [tags, setTags] = useState([])
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
-  const [comments, setComments] = useState({})
-  const [selectedComment, setSelectedComment] = useState(null)
-  const [newComment, setNewComment] = useState({ body: "", postId: null, userId: 1 })
+  const [comments, setComments] = useState<Record<number, Comment[]>>({})
+  const [selectedComment, setSelectedComment] = useState<Partial<Comment> | null>(null)
+  const [newComment, setNewComment] = useState<{ body: string; postId: number | null; userId: number }>({
+    body: "",
+    postId: null,
+    userId: 1,
+  })
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
   const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
@@ -372,7 +372,7 @@ const PostsManager = () => {
                   className="pl-8"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && searchPosts()}
+                  onKeyDown={(e) => e.key === "Enter" && searchPosts()}
                 />
               </div>
             </div>
@@ -475,7 +475,7 @@ const PostsManager = () => {
         open={showEditCommentDialog}
         onOpenChange={setShowEditCommentDialog}
         title="댓글 수정"
-        formData={selectedComment}
+        formData={selectedComment ? { body: selectedComment.body || "" } : { body: "" }}
         onChangeFormData={(name, value) => setSelectedComment({ ...selectedComment, [name]: value })}
         onSubmit={updateComment}
         isEdit={true}
@@ -486,7 +486,7 @@ const PostsManager = () => {
         open={showPostDetailDialog}
         onOpenChange={setShowPostDetailDialog}
         post={selectedPost}
-        comments={comments[selectedPost?.id]}
+        comments={selectedPost?.id !== undefined ? (comments[selectedPost.id] ?? []) : []}
         searchQuery={searchQuery}
         highlightText={highlightText}
         onAddComment={(postId) => {
