@@ -24,7 +24,10 @@ import { UserDetailDialog } from "../widgets/useDetailDialog/ui/UserDetailDialog
 
 import { Comment } from "../entities/comment/model/types"
 import { Post } from "../entities/post/model/types"
+
 import { useQuery } from "@tanstack/react-query"
+
+import { usePostsWithUsers } from "../features/post/hooks/usePostsWithUsers"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -74,38 +77,8 @@ const PostsManager = () => {
     navigate(`?${params.toString()}`)
   }
 
-  // 게시물 가져오기
-  const fetchPosts = () => {
-    postsQuery.refetch()
-    usersQuery.refetch()
-  }
-
-  // 게시물 요청 함수
-  const fetchPostsApi = async () => {
-    const res = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-    if (!res.ok) throw new Error("게시물 불러오기 실패")
-    return res.json() // { posts, total }
-  }
-
-  // 유저 요청 함수
-  const fetchUsersApi = async () => {
-    const res = await fetch("/api/users?limit=0&select=username,image")
-    if (!res.ok) throw new Error("유저 불러오기 실패")
-    return res.json() // { users: [...] }
-  }
-
-  // TanStack Queries
-  const postsQuery = useQuery({
-    queryKey: ["posts", limit, skip],
-    queryFn: fetchPostsApi,
-    enabled: !selectedTag,
-  })
-
-  const usersQuery = useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsersApi,
-    staleTime: 1000 * 60 * 5, // 5분 캐싱
-  })
+  // 게시물 가져오기 Hooks 사용
+  const { fetchPosts } = usePostsWithUsers(limit, skip, selectedTag, setPosts, setTotal, setLoading)
 
   // 태그 가져오기
   const fetchTags = async () => {
@@ -326,24 +299,6 @@ const PostsManager = () => {
     }
     updateURL()
   }, [skip, limit, sortBy, sortOrder, selectedTag])
-
-  // posts와 total 상태를 업데이트하는 effect 추가
-  useEffect(() => {
-    if (postsQuery.data && usersQuery.data) {
-      const postsWithUsers = postsQuery.data.posts.map((post) => ({
-        ...post,
-        author: usersQuery.data.users.find((user) => user.id === post.userId),
-      }))
-
-      setPosts(postsWithUsers)
-      setTotal(postsQuery.data.total)
-    }
-  }, [postsQuery.data, usersQuery.data])
-
-  // 로딩 상태 관리
-  useEffect(() => {
-    setLoading(postsQuery.isLoading || postsQuery.isFetching || usersQuery.isLoading || usersQuery.isFetching)
-  }, [postsQuery.isLoading, postsQuery.isFetching, usersQuery.isLoading, usersQuery.isFetching])
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
