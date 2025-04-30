@@ -24,6 +24,7 @@ import { UserDetailDialog } from "../widgets/useDetailDialog/ui/UserDetailDialog
 
 import { Comment } from "../entities/comment/model/types"
 import { Post } from "../entities/post/model/types"
+import { useQuery } from "@tanstack/react-query"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -75,34 +76,36 @@ const PostsManager = () => {
 
   // 게시물 가져오기
   const fetchPosts = () => {
-    setLoading(true)
-    let postsData
-    let usersData
-
-    fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-      .then((response) => response.json())
-      .then((data) => {
-        postsData = data
-        return fetch("/api/users?limit=0&select=username,image")
-      })
-      .then((response) => response.json())
-      .then((users) => {
-        usersData = users.users
-        const postsWithUsers = postsData.posts.map((post) => ({
-          ...post,
-          author: usersData.find((user) => user.id === post.userId),
-        }))
-        console.log(postsWithUsers)
-        setPosts(postsWithUsers)
-        setTotal(postsData.total)
-      })
-      .catch((error) => {
-        console.error("게시물 가져오기 오류:", error)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+    postsQuery.refetch()
+    usersQuery.refetch()
   }
+
+  // 게시물 요청 함수
+  const fetchPostsApi = async () => {
+    const res = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
+    if (!res.ok) throw new Error("게시물 불러오기 실패")
+    return res.json() // { posts, total }
+  }
+
+  // 유저 요청 함수
+  const fetchUsersApi = async () => {
+    const res = await fetch("/api/users?limit=0&select=username,image")
+    if (!res.ok) throw new Error("유저 불러오기 실패")
+    return res.json() // { users: [...] }
+  }
+
+  // TanStack Queries
+  const postsQuery = useQuery({
+    queryKey: ["posts", limit, skip],
+    queryFn: fetchPostsApi,
+    enabled: !selectedTag,
+  })
+
+  const usersQuery = useQuery({
+    queryKey: ["users"],
+    queryFn: fetchUsersApi,
+    staleTime: 1000 * 60 * 5, // 5분 캐싱
+  })
 
   // 태그 가져오기
   const fetchTags = async () => {
@@ -323,6 +326,24 @@ const PostsManager = () => {
     }
     updateURL()
   }, [skip, limit, sortBy, sortOrder, selectedTag])
+
+  // posts와 total 상태를 업데이트하는 effect 추가
+  useEffect(() => {
+    if (postsQuery.data && usersQuery.data) {
+      const postsWithUsers = postsQuery.data.posts.map((post) => ({
+        ...post,
+        author: usersQuery.data.users.find((user) => user.id === post.userId),
+      }))
+
+      setPosts(postsWithUsers)
+      setTotal(postsQuery.data.total)
+    }
+  }, [postsQuery.data, usersQuery.data])
+
+  // 로딩 상태 관리
+  useEffect(() => {
+    setLoading(postsQuery.isLoading || postsQuery.isFetching || usersQuery.isLoading || usersQuery.isFetching)
+  }, [postsQuery.isLoading, postsQuery.isFetching, usersQuery.isLoading, usersQuery.isFetching])
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
