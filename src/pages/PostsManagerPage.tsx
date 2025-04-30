@@ -25,9 +25,8 @@ import { UserDetailDialog } from "../widgets/useDetailDialog/ui/UserDetailDialog
 import { Comment } from "../entities/comment/model/types"
 import { Post } from "../entities/post/model/types"
 
-import { useQuery } from "@tanstack/react-query"
-
 import { usePostsWithUsers } from "../features/post/hooks/usePostsWithUsers"
+import { useTagsQuery } from "../features/tag/hooks/useTagsQuery"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -47,7 +46,7 @@ const PostsManager = () => {
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 })
   const [loading, setLoading] = useState(false)
-  const [tags, setTags] = useState([])
+  const [tags, setTags] = useState<string[]>([])
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
   const [comments, setComments] = useState<Record<number, Comment[]>>({})
   const [selectedComment, setSelectedComment] = useState<Partial<Comment> | null>(null)
@@ -80,16 +79,8 @@ const PostsManager = () => {
   // 게시물 가져오기 Hooks 사용
   const { fetchPosts } = usePostsWithUsers(limit, skip, selectedTag, setPosts, setTotal, setLoading)
 
-  // 태그 가져오기
-  const fetchTags = async () => {
-    try {
-      const response = await fetch("/api/posts/tags")
-      const data = await response.json()
-      setTags(data)
-    } catch (error) {
-      console.error("태그 가져오기 오류:", error)
-    }
-  }
+  // 태그 가져오기 Hooks 사용
+  useTagsQuery(setTags)
 
   // 게시물 검색
   const searchPosts = async () => {
@@ -286,10 +277,6 @@ const PostsManager = () => {
       console.error("사용자 정보 가져오기 오류:", error)
     }
   }
-
-  useEffect(() => {
-    fetchTags()
-  }, [])
 
   useEffect(() => {
     if (selectedTag) {
