@@ -26,6 +26,7 @@ import { TagSelect } from "../entities/tag/ui/TagSelect"
 import { UserDetails } from "../entities/user/ui/UserDetails"
 import { PostFormDialog } from "../widgets/postFormDialog/ui/PostFormDialog"
 import { CommentFormDialog } from "../widgets/commentFornDialog/ui/CommentFormDialog"
+import { PostDetailDialog } from "../widgets/postDetailDialog/ui/PostDetailDialog"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -480,32 +481,24 @@ const PostsManager = () => {
       />
 
       {/* 게시물 상세 보기 대화상자 */}
-      <Dialog open={showPostDetailDialog} onOpenChange={setShowPostDetailDialog}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>{highlightText(selectedPost?.title, searchQuery)}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p>{highlightText(selectedPost?.body, searchQuery)}</p>
-            <CommentList
-              comments={comments[selectedPost?.id]}
-              postId={selectedPost?.id}
-              searchQuery={searchQuery}
-              highlightText={highlightText}
-              onAddComment={(postId) => {
-                setNewComment((prev) => ({ ...prev, postId }))
-                setShowAddCommentDialog(true)
-              }}
-              onLikeComment={likeComment}
-              onEditComment={(comment) => {
-                setSelectedComment(comment)
-                setShowEditCommentDialog(true)
-              }}
-              onDeleteComment={deleteComment}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PostDetailDialog
+        open={showPostDetailDialog}
+        onOpenChange={setShowPostDetailDialog}
+        post={selectedPost}
+        comments={comments[selectedPost?.id]}
+        searchQuery={searchQuery}
+        highlightText={highlightText}
+        onAddComment={(postId) => {
+          setNewComment((prev) => ({ ...prev, postId }))
+          setShowAddCommentDialog(true)
+        }}
+        onLikeComment={likeComment}
+        onEditComment={(comment) => {
+          setSelectedComment(comment)
+          setShowEditCommentDialog(true)
+        }}
+        onDeleteComment={deleteComment}
+      />
 
       {/* 사용자 모달 */}
       <Dialog open={showUserModal} onOpenChange={setShowUserModal}>
