@@ -27,6 +27,7 @@ import { UserDetails } from "../entities/user/ui/UserDetails"
 import { PostFormDialog } from "../widgets/postFormDialog/ui/PostFormDialog"
 import { CommentFormDialog } from "../widgets/commentFornDialog/ui/CommentFormDialog"
 import { PostDetailDialog } from "../widgets/postDetailDialog/ui/PostDetailDialog"
+import { UserDetailDialog } from "../widgets/useDetailDIalog/ui/UserDetailDialog"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -501,14 +502,7 @@ const PostsManager = () => {
       />
 
       {/* 사용자 모달 */}
-      <Dialog open={showUserModal} onOpenChange={setShowUserModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>사용자 정보</DialogTitle>
-          </DialogHeader>
-          <UserDetails user={selectedUser} />
-        </DialogContent>
-      </Dialog>
+      <UserDetailDialog open={showUserModal} onOpenChange={setShowUserModal} user={selectedUser} title="사용자 정보" />
     </Card>
   )
 }
