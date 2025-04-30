@@ -2,37 +2,25 @@
 import { FC } from "react"
 import { Button } from "../../ui"
 import { PageSizeSelect } from "./PageSizeSelect.tsx"
+import usePageStore from "./model/pageStore"
 
 interface PaginationProps {
-  currentPage: number
   pageSize: number
-  total: number
-  onPageChange: (page: number) => void
-  onPageSizeChange: (size: number) => void
   pageSizeOptions?: number[]
 }
 
-export const Pagination: FC<PaginationProps> = ({
-  currentPage,
-  pageSize,
-  total,
-  onPageChange,
-  onPageSizeChange,
-  pageSizeOptions = [10, 20, 30],
-}) => {
-  const skip = currentPage * pageSize
-  const hasNextPage = skip + pageSize < total
-  const hasPrevPage = currentPage > 0
+export const Pagination: FC<PaginationProps> = ({ pageSize, pageSizeOptions = [10, 20, 30] }) => {
+  const { skip, limit, total, setSkip, setLimit } = usePageStore()
 
   return (
     <div className="flex justify-between items-center">
-      <PageSizeSelect value={pageSize.toString()} onChange={onPageSizeChange} options={pageSizeOptions} />
+      <PageSizeSelect value={pageSize.toString()} onChange={setLimit} options={pageSizeOptions} />
 
       <div className="flex gap-2">
-        <Button disabled={!hasPrevPage} onClick={() => onPageChange(currentPage - 1)}>
+        <Button disabled={skip === 0} onClick={() => setSkip(skip - limit)}>
           이전
         </Button>
-        <Button disabled={!hasNextPage} onClick={() => onPageChange(currentPage + 1)}>
+        <Button disabled={!(skip + limit < total)} onClick={() => setSkip(skip + limit)}>
           다음
         </Button>
       </div>

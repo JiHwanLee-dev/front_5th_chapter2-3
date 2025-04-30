@@ -27,6 +27,9 @@ import { Post } from "../entities/post/model/types"
 
 import { usePostsWithUsers } from "../features/post/hooks/usePostsWithUsers"
 import { useTagsQuery } from "../features/tag/hooks/useTagsQuery"
+import usePostStore from "../entities/post/model/postStore"
+import useUserStore from "../entities/user/model/useStore"
+import usePageStore from "../shared/ui/pagination/model/pageStore"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -34,10 +37,10 @@ const PostsManager = () => {
   const queryParams = new URLSearchParams(location.search)
 
   // 상태 관리
-  const [posts, setPosts] = useState<Post[]>([])
-  const [total, setTotal] = useState(0)
-  const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
-  const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"))
+  const { posts, setPosts } = usePostStore()
+  const { skip, limit, setSkip, setLimit, setTotal } = usePageStore()
+  const { selectedUser, setSelectedUser } = useUserStore()
+
   const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
   const [selectedPost, setSelectedPost] = useState<Partial<Post> | null>(null)
   const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
@@ -59,10 +62,6 @@ const PostsManager = () => {
   const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
   const [showUserModal, setShowUserModal] = useState(false)
-  const [selectedUser, setSelectedUser] = useState(null)
-
-  // 페이지네이션 상태를 계산 (skip을 currentPage로 변환)
-  const currentPage = Math.floor(skip / limit)
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -77,7 +76,7 @@ const PostsManager = () => {
   }
 
   // 게시물 가져오기 Hooks 사용
-  const { fetchPosts } = usePostsWithUsers(limit, skip, selectedTag, setPosts, setTotal, setLoading)
+  const { fetchPosts } = usePostsWithUsers(limit, skip, selectedTag, setTotal, setLoading)
 
   // 태그 가져오기 Hooks 사용
   useTagsQuery(setTags)
@@ -375,7 +374,7 @@ const PostsManager = () => {
             <div className="flex justify-center p-4">로딩 중...</div>
           ) : (
             <PostList
-              posts={posts}
+              // posts={posts}
               searchQuery={searchQuery}
               selectedTag={selectedTag}
               onTagSelect={setSelectedTag}
@@ -392,13 +391,7 @@ const PostsManager = () => {
           )}
 
           {/* 페이지네이션 */}
-          <Pagination
-            currentPage={currentPage}
-            pageSize={limit}
-            total={total}
-            onPageChange={(page) => setSkip(page * limit)}
-            onPageSizeChange={setLimit}
-          />
+          <Pagination pageSize={limit} />
         </div>
       </CardContent>
 
@@ -465,7 +458,7 @@ const PostsManager = () => {
       />
 
       {/* 사용자 모달 */}
-      <UserDetailDialog open={showUserModal} onOpenChange={setShowUserModal} user={selectedUser} title="사용자 정보" />
+      <UserDetailDialog open={showUserModal} onOpenChange={setShowUserModal} title="사용자 정보" />
     </Card>
   )
 }
