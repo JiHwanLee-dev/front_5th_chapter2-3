@@ -2,17 +2,18 @@
 import { FC } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../shared/ui"
 // import { TagSelectProps } from "../model/types"
-import { Tag } from "../model/types"
+import useTagStore from "../model/tagStore"
 
 interface TagSelectProps {
-  tags: Tag[]
   selectedTag: string
   onTagSelect: (tag: string) => void
   updateURL: () => void
   fetchPostsByTag: (tag: string) => void
 }
 
-export const TagSelect: FC<TagSelectProps> = ({ tags, selectedTag, onTagSelect, updateURL, fetchPostsByTag }) => {
+export const TagSelect: FC<TagSelectProps> = ({ selectedTag, onTagSelect, updateURL, fetchPostsByTag }) => {
+  const { tags } = useTagStore()
+
   return (
     <Select
       value={selectedTag}

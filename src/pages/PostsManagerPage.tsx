@@ -32,7 +32,7 @@ import useUserStore from "../entities/user/model/useStore"
 import usePageStore from "../shared/ui/pagination/model/pageStore"
 import usePostDialogStore from "../entities/post/model/postDialog"
 import useCommentDialogStore from "../entities/comment/model/commentDialogStore"
-
+import useTagStore from "../entities/tag/model/tagStore"
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -42,19 +42,9 @@ const PostsManager = () => {
   const { posts, setPosts } = usePostStore()
   const { skip, limit, setSkip, setLimit, setTotal } = usePageStore()
   const { selectedUser, setSelectedUser } = useUserStore()
-  const {
-    showAddDialog,
-    showEditDialog,
-    showPostDetailDialog,
-    showUserModal,
-    setShowAddDialog,
-    setShowEditDialog,
-    setShowPostDetailDialog,
-    setShowUserModal,
-  } = usePostDialogStore()
-
-  const { showAddCommentDialog, showEditCommentDialog, setShowAddCommentDialog, setShowEditCommentDialog } =
-    useCommentDialogStore()
+  const { setShowAddDialog, setShowEditDialog, setShowPostDetailDialog, setShowUserModal } = usePostDialogStore()
+  const { setShowAddCommentDialog, setShowEditCommentDialog } = useCommentDialogStore()
+  const { tags, setTags } = useTagStore()
 
   const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
   const [selectedPost, setSelectedPost] = useState<Partial<Post> | null>(null)
@@ -63,7 +53,7 @@ const PostsManager = () => {
 
   const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 })
   const [loading, setLoading] = useState(false)
-  const [tags, setTags] = useState<string[]>([])
+
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
   const [comments, setComments] = useState<Record<number, Comment[]>>({})
   const [selectedComment, setSelectedComment] = useState<Partial<Comment> | null>(null)
@@ -349,7 +339,6 @@ const PostsManager = () => {
               </div>
             </div>
             <TagSelect
-              tags={tags}
               selectedTag={selectedTag}
               onTagSelect={setSelectedTag}
               updateURL={updateURL}
