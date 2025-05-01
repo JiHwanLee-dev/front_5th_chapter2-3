@@ -462,7 +462,7 @@ const PostsManager = () => {
       />
 
       {/* 사용자 모달 */}
-      <UserDetailDialog open={showUserModal} onOpenChange={setShowUserModal} title="사용자 정보" />
+      <UserDetailDialog title="사용자 정보" />
     </Card>
   )
 }
