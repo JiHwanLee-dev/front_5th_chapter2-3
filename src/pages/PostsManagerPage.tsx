@@ -22,9 +22,9 @@ import { CommentFormDialog } from "../widgets/commentFormDialog/ui/CommentFormDi
 import { PostDetailDialog } from "../widgets/postDetailDialog/ui/PostDetailDialog"
 import { UserDetailDialog } from "../widgets/useDetailDialog/ui/UserDetailDialog"
 
-import { Comment } from "../entities/comment/model/types"
+import { Comment, CommentFormData } from "../entities/comment/model/types"
 import { Post } from "../entities/post/model/types"
-import { CommentFormData } from "../entities/comment/model/types"
+import { User } from "../entities/user/model/types"
 
 import { usePostsWithUsers } from "../features/post/hooks/usePostsWithUsers"
 import { useTagsQuery } from "../features/tag/hooks/useTagsQuery"
@@ -38,22 +38,23 @@ import useNewPostStore from "../entities/post/model/newPostStore"
 import useSelectedPostStore from "../entities/post/model/selectedPostStore"
 import useNewCommentStore from "../entities/comment/model/newCommentStore"
 import useSelectedCommentStore from "../entities/comment/model/selectedCommentStore"
-import useCommentsStore from "../entities/comment/model/commentsStore"
 import useSelectedTag from "../entities/tag/model/selectedTagStore"
 import useFilterStore from "../features/postFiltering/model/filterStore"
+
+import { getMswUrl } from "../shared/constants/mswUrl"
 
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
+  // const queryParams = new URLSearchParams(location.search)
 
   // 상태 관리
   const { posts, setPosts } = usePostStore()
   const { skip, limit, setSkip, setLimit, setTotal } = usePageStore()
-  const { selectedUser, setSelectedUser } = useUserStore()
+  const { setSelectedUser } = useUserStore()
   const { setShowAddDialog, setShowEditDialog, setShowPostDetailDialog, setShowUserModal } = usePostDialogStore()
   const { setShowAddCommentDialog, setShowEditCommentDialog } = useCommentDialogStore()
-  const { tags, setTags } = useTagStore()
+  const { setTags } = useTagStore()
   const { newPost, setNewPost } = useNewPostStore()
   const { selectedPost, setSelectedPost } = useSelectedPostStore()
   const { selectedComment, setSelectedComment } = useSelectedCommentStore()
@@ -92,9 +93,10 @@ const PostsManager = () => {
       fetchPosts()
       return
     }
+
     setLoading(true)
     try {
-      const response = await fetch(`/api/posts/search?q=${searchQuery}`)
+      const response = await fetch(`${getMswUrl}/posts/search?q=${searchQuery}`)
       const data = await response.json()
       setPosts(data.posts)
       setTotal(data.total)
@@ -105,7 +107,7 @@ const PostsManager = () => {
   }
 
   // 태그별 게시물 가져오기
-  const fetchPostsByTag = async (tag) => {
+  const fetchPostsByTag = async (tag: string) => {
     if (!tag || tag === "all") {
       fetchPosts()
       return
@@ -113,15 +115,15 @@ const PostsManager = () => {
     setLoading(true)
     try {
       const [postsResponse, usersResponse] = await Promise.all([
-        fetch(`/api/posts/tag/${tag}`),
-        fetch("/api/users?limit=0&select=username,image"),
+        fetch(`${getMswUrl}/posts/tag/${tag}`),
+        fetch(`${getMswUrl}/users?limit=0&select=username,image`),
       ])
       const postsData = await postsResponse.json()
       const usersData = await usersResponse.json()
 
-      const postsWithUsers = postsData.posts.map((post) => ({
+      const postsWithUsers = postsData.posts.map((post: Post) => ({
         ...post,
-        author: usersData.users.find((user) => user.id === post.userId),
+        author: usersData.users.find((user: { id: number }) => user.id === post.userId),
       }))
 
       setPosts(postsWithUsers)
@@ -135,7 +137,7 @@ const PostsManager = () => {
   // 게시물 추가
   const addPost = async () => {
     try {
-      const response = await fetch("/api/posts/add", {
+      const response = await fetch(`${getMswUrl}/posts/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newPost),
@@ -152,7 +154,7 @@ const PostsManager = () => {
   // 게시물 업데이트
   const updatePost = async () => {
     try {
-      const response = await fetch(`/api/posts/${selectedPost?.id}`, {
+      const response = await fetch(`${getMswUrl}/posts/${selectedPost?.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedPost),
@@ -168,7 +170,7 @@ const PostsManager = () => {
   // 게시물 삭제
   const deletePost = async (id: number) => {
     try {
-      await fetch(`/api/posts/${id}`, {
+      await fetch(`${getMswUrl}/posts/${id}`, {
         method: "DELETE",
       })
       setPosts(posts.filter((post) => post.id !== id))
@@ -181,7 +183,7 @@ const PostsManager = () => {
   const fetchComments = async (postId: number) => {
     if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
     try {
-      const response = await fetch(`/api/comments/post/${postId}`)
+      const response = await fetch(`${getMswUrl}/comments/post/${postId}`)
       const data = await response.json()
       setComments((prev) => ({ ...prev, [postId]: data.comments }))
     } catch (error) {
@@ -192,7 +194,7 @@ const PostsManager = () => {
   // 댓글 추가
   const addComment = async () => {
     try {
-      const response = await fetch("/api/comments/add", {
+      const response = await fetch(`${getMswUrl}/comments/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newComment),
@@ -212,7 +214,7 @@ const PostsManager = () => {
   // 댓글 업데이트
   const updateComment = async () => {
     try {
-      const response = await fetch(`/api/comments/${selectedComment?.id}`, {
+      const response = await fetch(`${getMswUrl}/comments/${selectedComment?.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ body: selectedComment?.body }),
@@ -231,7 +233,7 @@ const PostsManager = () => {
   // 댓글 삭제
   const deleteComment = async (id: number, postId: number) => {
     try {
-      await fetch(`/api/comments/${id}`, {
+      await fetch(`${getMswUrl}/comments/${id}`, {
         method: "DELETE",
       })
       setComments((prev) => ({
@@ -246,10 +248,13 @@ const PostsManager = () => {
   // 댓글 좋아요
   const likeComment = async (id: number, postId: number) => {
     try {
-      const response = await fetch(`/api/comments/${id}`, {
+      const response = await fetch(`${getMswUrl}/comments/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ likes: comments[postId].find((c) => c.id === id).likes + 1 }),
+        body: JSON.stringify(() => {
+          const comment = comments[postId].find((c) => c.id === id)
+          return { likes: comment ? comment.likes + 1 : 1 }
+        }),
       })
       const data = await response.json()
       setComments((prev) => ({
@@ -271,9 +276,9 @@ const PostsManager = () => {
   }
 
   // 사용자 모달 열기
-  const openUserModal = async (user) => {
+  const openUserModal = async (user: User) => {
     try {
-      const response = await fetch(`/api/users/${user.id}`)
+      const response = await fetch(`${getMswUrl}/users/${user.id}`)
       const userData = await response.json()
       setSelectedUser(userData)
       setShowUserModal(true)
@@ -375,7 +380,7 @@ const PostsManager = () => {
             <PostList
               onViewDetail={openPostDetail}
               onDelete={deletePost}
-              onUserSelect={openUserModal}
+              onUserSelect={(author) => openUserModal(author as unknown as User)}
               highlightText={highlightText}
               updateURL={updateURL}
             />
@@ -395,7 +400,7 @@ const PostsManager = () => {
       {/* 댓글 추가 대화상자 */}
       <CommentFormDialog
         title="새 댓글 추가"
-        formData={newComment}
+        formData={newComment as Partial<CommentFormData>}
         onChangeFormData={(name, value) => setNewComment({ ...newComment, [name]: value })}
         onSubmit={addComment}
         isEdit={false}
@@ -405,7 +410,7 @@ const PostsManager = () => {
       <CommentFormDialog
         title="댓글 수정"
         formData={selectedComment ? { body: selectedComment.body || "" } : { body: "" }}
-        onChangeFormData={(name, value) => setSelectedComment({ ...selectedComment, [name]: value })}
+        onChangeFormData={(name, value) => setSelectedComment({ ...selectedComment, [name]: value } as Comment)}
         onSubmit={updateComment}
         isEdit={true}
       />
@@ -416,7 +421,7 @@ const PostsManager = () => {
         comments={selectedPost?.id !== undefined ? (comments[selectedPost.id] ?? []) : []}
         highlightText={highlightText}
         onAddComment={(postId) => {
-          setNewComment((prev) => ({ ...prev, postId }))
+          setNewComment({ ...newComment, postId })
           setShowAddCommentDialog(true)
         }}
         onLikeComment={likeComment}
