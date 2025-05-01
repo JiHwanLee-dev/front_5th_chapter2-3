@@ -30,6 +30,8 @@ import { useTagsQuery } from "../features/tag/hooks/useTagsQuery"
 import usePostStore from "../entities/post/model/postStore"
 import useUserStore from "../entities/user/model/useStore"
 import usePageStore from "../shared/ui/pagination/model/pageStore"
+import usePostDialogStore from "../entities/post/model/postDialog"
+import useCommentDialogStore from "../entities/comment/model/commentDialogStore"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -40,13 +42,25 @@ const PostsManager = () => {
   const { posts, setPosts } = usePostStore()
   const { skip, limit, setSkip, setLimit, setTotal } = usePageStore()
   const { selectedUser, setSelectedUser } = useUserStore()
+  const {
+    showAddDialog,
+    showEditDialog,
+    showPostDetailDialog,
+    showUserModal,
+    setShowAddDialog,
+    setShowEditDialog,
+    setShowPostDetailDialog,
+    setShowUserModal,
+  } = usePostDialogStore()
+
+  const { showAddCommentDialog, showEditCommentDialog, setShowAddCommentDialog, setShowEditCommentDialog } =
+    useCommentDialogStore()
 
   const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
   const [selectedPost, setSelectedPost] = useState<Partial<Post> | null>(null)
   const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
   const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc")
-  const [showAddDialog, setShowAddDialog] = useState(false)
-  const [showEditDialog, setShowEditDialog] = useState(false)
+
   const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 })
   const [loading, setLoading] = useState(false)
   const [tags, setTags] = useState<string[]>([])
@@ -58,10 +72,6 @@ const PostsManager = () => {
     postId: null,
     userId: 1,
   })
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false)
-  const [showEditCommentDialog, setShowEditCommentDialog] = useState(false)
-  const [showPostDetailDialog, setShowPostDetailDialog] = useState(false)
-  const [showUserModal, setShowUserModal] = useState(false)
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -397,8 +407,6 @@ const PostsManager = () => {
 
       {/* 게시물 추가 대화상자 */}
       <PostFormDialog
-        open={showAddDialog}
-        onOpenChange={setShowAddDialog}
         formData={newPost}
         onChangeFormData={(name, value) => setNewPost({ ...newPost, [name]: value })}
         onSubmit={addPost}
@@ -407,8 +415,6 @@ const PostsManager = () => {
 
       {/* 게시물 수정 대화상자 */}
       <PostFormDialog
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
         formData={selectedPost}
         onChangeFormData={(name, value) => setSelectedPost({ ...selectedPost, [name]: value })}
         onSubmit={updatePost}
