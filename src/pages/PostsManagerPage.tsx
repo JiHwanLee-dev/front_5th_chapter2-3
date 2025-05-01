@@ -38,6 +38,7 @@ import useNewPostStore from "../entities/post/model/newPostStore"
 import useSelectedPostStore from "../entities/post/model/selectedPostStore"
 import useNewCommentStore from "../entities/comment/model/newCommentStore"
 import useSelectedCommentStore from "../entities/comment/model/selectedCommentStore"
+import useCommentsStore from "../entities/comment/model/commentsStore"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -63,10 +64,13 @@ const PostsManager = () => {
   const [loading, setLoading] = useState(false)
 
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
+
   const [comments, setComments] = useState<Record<number, Comment[]>>({})
+  // const { comments, setComments, setPostComments } = useCommentsStore()
 
   // const [selectedComment, setSelectedComment] = useState<Partial<Comment> | null>(null)
 
+  // 밑에 store사용시 댓글 추가가 안됨.. 나중에 확인
   // const { newComment, setNewComment } = useNewCommentStore()
   const [newComment, setNewComment] = useState<CommentFormData>({
     body: "",
