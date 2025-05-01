@@ -48,7 +48,6 @@ const PostsManager = () => {
   const { setShowAddDialog, setShowEditDialog, setShowPostDetailDialog, setShowUserModal } = usePostDialogStore()
   const { setShowAddCommentDialog, setShowEditCommentDialog } = useCommentDialogStore()
   const { tags, setTags } = useTagStore()
-
   const { newPost, setNewPost } = useNewPostStore()
   const { selectedPost, setSelectedPost } = useSelectedPostStore()
 
@@ -142,7 +141,7 @@ const PostsManager = () => {
       const data = await response.json()
       setPosts([data, ...posts])
       setShowAddDialog(false)
-      setNewPost({ id: 0, title: "", body: "", userId: 1 })
+      setNewPost({ title: "", body: "", userId: 1 })
     } catch (error) {
       console.error("게시물 추가 오류:", error)
     }
@@ -377,15 +376,10 @@ const PostsManager = () => {
             <div className="flex justify-center p-4">로딩 중...</div>
           ) : (
             <PostList
-              // posts={posts}
               searchQuery={searchQuery}
               selectedTag={selectedTag}
               onTagSelect={setSelectedTag}
               onViewDetail={openPostDetail}
-              onEdit={(post) => {
-                setSelectedPost(post)
-                setShowEditDialog(true)
-              }}
               onDelete={deletePost}
               onUserSelect={openUserModal}
               highlightText={highlightText}

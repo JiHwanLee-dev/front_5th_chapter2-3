@@ -4,6 +4,9 @@ import { Table, TableHeader, TableBody, TableRow, TableHead } from "../../../sha
 import { Post } from "../model/types"
 import PostCard from "./PostCard"
 import usePostStore from "../model/postStore"
+import useSelectedPostStore from "../model/selectedPostStore"
+import usePostDialogStore from "../model/postDialog"
+
 interface Author {
   id: number
   username: string
@@ -16,7 +19,6 @@ interface PostListProps {
   highlightText: (text: string, highlight: string) => React.ReactNode
   onTagSelect: (tag: string) => void
   onViewDetail: (post: Post) => void
-  onEdit: (post: Post) => void
   onDelete: (id: number) => void
   onUserSelect: (user: Author) => void
   updateURL: () => void
@@ -29,12 +31,19 @@ export const PostList: FC<PostListProps> = ({
   highlightText,
   onTagSelect,
   onViewDetail,
-  onEdit,
   onDelete,
   onUserSelect,
   updateURL,
 }) => {
   const { posts } = usePostStore()
+  const { setShowEditDialog } = usePostDialogStore()
+  const { setSelectedPost } = useSelectedPostStore()
+
+  const handleEdit = (post: Post) => {
+    setSelectedPost(post)
+    setShowEditDialog(true)
+  }
+
   return (
     <Table>
       <TableHeader>
@@ -57,7 +66,7 @@ export const PostList: FC<PostListProps> = ({
             highlightText={highlightText}
             onTagSelect={onTagSelect}
             onViewDetail={onViewDetail}
-            onEdit={onEdit}
+            onEdit={handleEdit}
             onDelete={onDelete}
             onUserSelect={onUserSelect}
             updateURL={updateURL}
