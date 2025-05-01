@@ -5,11 +5,11 @@ import { CommentList } from "../../../entities/comment/ui"
 import { Post } from "../../../entities/post/model/types"
 import { Comment } from "../../../entities/comment/model/types"
 import usePostDialogStore from "../../../entities/post/model/postDialog"
+import useFilterStore from "../../../features/postFiltering/model/filterStore"
 
 interface PostDetailDialogProps {
   post: Partial<Post> | null
   comments: Comment[] | undefined
-  searchQuery: string
   highlightText: (text: string, highlight: string) => React.ReactNode
   onAddComment: (postId: number) => void
   onLikeComment: (id: number, postId: number) => void
@@ -20,7 +20,6 @@ interface PostDetailDialogProps {
 export const PostDetailDialog: FC<PostDetailDialogProps> = ({
   post,
   comments,
-  searchQuery,
   highlightText,
   onAddComment,
   onLikeComment,
@@ -28,6 +27,7 @@ export const PostDetailDialog: FC<PostDetailDialogProps> = ({
   onDeleteComment,
 }) => {
   const { showPostDetailDialog, setShowPostDetailDialog } = usePostDialogStore()
+  const { searchQuery } = useFilterStore()
 
   if (!post) return null
   return (

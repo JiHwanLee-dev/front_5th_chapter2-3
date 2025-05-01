@@ -7,6 +7,7 @@ import usePostStore from "../model/postStore"
 import useSelectedPostStore from "../model/selectedPostStore"
 import usePostDialogStore from "../model/postDialog"
 import useSelectedTag from "../../tag/model/selectedTagStore"
+import useFilterStore from "../../../features/postFiltering/model/filterStore"
 
 interface Author {
   id: number
@@ -15,7 +16,6 @@ interface Author {
 }
 
 interface PostListProps {
-  searchQuery: string
   highlightText: (text: string, highlight: string) => React.ReactNode
   onViewDetail: (post: Post) => void
   onDelete: (id: number) => void
@@ -24,7 +24,6 @@ interface PostListProps {
 }
 
 export const PostList: FC<PostListProps> = ({
-  searchQuery,
   loading = false,
   highlightText,
   onViewDetail,
@@ -36,7 +35,7 @@ export const PostList: FC<PostListProps> = ({
   const { setShowEditDialog } = usePostDialogStore()
   const { setSelectedPost } = useSelectedPostStore()
   const { selectedTag, setSelectedTag } = useSelectedTag()
-
+  const { searchQuery, setSearchQuery, sortBy, setSortBy, sortOrder, setSortOrder } = useFilterStore()
   const handleEdit = (post: Post) => {
     setSelectedPost(post)
     setShowEditDialog(true)

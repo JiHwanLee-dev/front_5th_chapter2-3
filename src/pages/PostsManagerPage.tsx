@@ -40,6 +40,7 @@ import useNewCommentStore from "../entities/comment/model/newCommentStore"
 import useSelectedCommentStore from "../entities/comment/model/selectedCommentStore"
 import useCommentsStore from "../entities/comment/model/commentsStore"
 import useSelectedTag from "../entities/tag/model/selectedTagStore"
+import useFilterStore from "../features/postFiltering/model/filterStore"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -59,9 +60,7 @@ const PostsManager = () => {
   const { newComment, setNewComment } = useNewCommentStore()
   const { selectedTag, setSelectedTag } = useSelectedTag()
 
-  const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
-  const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
-  const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc")
+  const { searchQuery, setSearchQuery, sortBy, setSortBy, sortOrder, setSortOrder } = useFilterStore()
 
   const [loading, setLoading] = useState(false)
 
@@ -374,7 +373,6 @@ const PostsManager = () => {
             <div className="flex justify-center p-4">로딩 중...</div>
           ) : (
             <PostList
-              searchQuery={searchQuery}
               onViewDetail={openPostDetail}
               onDelete={deletePost}
               onUserSelect={openUserModal}
@@ -416,7 +414,6 @@ const PostsManager = () => {
       <PostDetailDialog
         post={selectedPost}
         comments={selectedPost?.id !== undefined ? (comments[selectedPost.id] ?? []) : []}
-        searchQuery={searchQuery}
         highlightText={highlightText}
         onAddComment={(postId) => {
           setNewComment((prev) => ({ ...prev, postId }))
