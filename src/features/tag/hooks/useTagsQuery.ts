@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query"
 import { fetchTagsApi } from "../api/tagApi"
 import { useEffect } from "react"
+import { Tag } from "../../../entities/tag/model/types"
 
 /**
  * 태그 목록을 가져오는 쿼리 훅
  */
-export const useTagsQuery = (setTags: (tags: string[]) => void) => {
+export const useTagsQuery = (setTags: (tags: Tag[]) => void) => {
   const tagsQuery = useQuery({
     queryKey: ["tags"],
     queryFn: fetchTagsApi,

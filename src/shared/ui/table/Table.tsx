@@ -1,4 +1,3 @@
-import * as React from "react"
 import { forwardRef } from "react"
 import { TableProps, TableHeaderProps, TableBodyProps, TableRowProps, TableHeadProps, TableCellProps } from "./types"
 

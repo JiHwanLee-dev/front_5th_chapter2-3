@@ -5,7 +5,8 @@ import { PostForm } from "../../../features/postForm/ui/PostForm"
 import usePostDialogStore from "../../../entities/post/model/postDialog"
 import useNewPostStore from "../../../entities/post/model/newPostStore"
 import useSelectedPostStore from "../../../entities/post/model/selectedPostStore"
-
+// import { Post } from "../../../entities/post/model/post"
+import { Post } from "../../../entities/post/model/types"
 interface PostFormDialogProps {
   onSubmit?: () => void
   isEdit?: boolean
@@ -29,8 +30,8 @@ export const PostFormDialog: FC<PostFormDialogProps> = ({ onSubmit, isEdit = fal
           data={isEdit ? selectedPost || {} : newPost || {}}
           onChange={
             isEdit
-              ? (name, value) => setSelectedPost({ ...selectedPost, [name]: value })
-              : (name, value) => setNewPost({ ...newPost, [name]: value })
+              ? (name, value) => setSelectedPost({ ...selectedPost, [name]: value } as Post)
+              : (name, value) => setNewPost({ ...newPost, [name]: value } as Post)
           }
           onSubmit={handleSubmit}
           isEdit={isEdit}

@@ -1,4 +1,3 @@
-import * as React from "react"
 import { forwardRef } from "react"
 import { CardProps, CardHeaderProps, CardTitleProps, CardContentProps } from "./types"
 

@@ -6,12 +6,10 @@ import useUserStore from "../../../entities/user/model/useStore"
 import usePostDialogStore from "../../../entities/post/model/postDialog"
 
 interface UserDetailDialogProps {
-  // open: boolean
-  // onOpenChange: (open: boolean) => void
   title?: string
 }
 
-export const UserDetailDialog: FC<UserDetailDialogProps> = ({ open, onOpenChange, title = "사용자 정보" }) => {
+export const UserDetailDialog: FC<UserDetailDialogProps> = ({ title = "사용자 정보" }) => {
   const { selectedUser } = useUserStore()
   const { showUserModal, setShowUserModal } = usePostDialogStore()
 

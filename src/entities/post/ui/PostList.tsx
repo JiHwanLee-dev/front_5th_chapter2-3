@@ -23,19 +23,12 @@ interface PostListProps {
   updateURL: () => void
 }
 
-export const PostList: FC<PostListProps> = ({
-  loading = false,
-  highlightText,
-  onViewDetail,
-  onDelete,
-  onUserSelect,
-  updateURL,
-}) => {
+export const PostList: FC<PostListProps> = ({ highlightText, onViewDetail, onDelete, onUserSelect, updateURL }) => {
   const { posts } = usePostStore()
   const { setShowEditDialog } = usePostDialogStore()
   const { setSelectedPost } = useSelectedPostStore()
   const { selectedTag, setSelectedTag } = useSelectedTag()
-  const { searchQuery, setSearchQuery, sortBy, setSortBy, sortOrder, setSortOrder } = useFilterStore()
+  const { searchQuery } = useFilterStore()
   const handleEdit = (post: Post) => {
     setSelectedPost(post)
     setShowEditDialog(true)
