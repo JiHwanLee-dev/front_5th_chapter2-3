@@ -8,14 +8,10 @@ import useSelectedPostStore from "../../../entities/post/model/selectedPostStore
 // import { Post } from "../../../entities/post/model/post"
 import { Post } from "../../../entities/post/model/types"
 interface PostFormDialogProps {
-  onSubmit?: () => void
   isEdit?: boolean
 }
 
-export const PostFormDialog: FC<PostFormDialogProps> = ({ onSubmit, isEdit = false }) => {
-  const handleSubmit = () => {
-    if (onSubmit) onSubmit()
-  }
+export const PostFormDialog: FC<PostFormDialogProps> = ({ isEdit = false }) => {
   const { showAddDialog, showEditDialog, setShowAddDialog, setShowEditDialog } = usePostDialogStore()
   const { newPost, setNewPost } = useNewPostStore()
   const { selectedPost, setSelectedPost } = useSelectedPostStore()
@@ -33,7 +29,6 @@ export const PostFormDialog: FC<PostFormDialogProps> = ({ onSubmit, isEdit = fal
               ? (name, value) => setSelectedPost({ ...selectedPost, [name]: value } as Post)
               : (name, value) => setNewPost({ ...newPost, [name]: value } as Post)
           }
-          onSubmit={handleSubmit}
           isEdit={isEdit}
         />
       </DialogContent>

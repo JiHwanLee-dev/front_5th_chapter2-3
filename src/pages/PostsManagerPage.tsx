@@ -34,7 +34,6 @@ import usePageStore from "../shared/ui/pagination/model/pageStore"
 import usePostDialogStore from "../entities/post/model/postDialog"
 import useCommentDialogStore from "../entities/comment/model/commentDialogStore"
 import useTagStore from "../entities/tag/model/tagStore"
-import useNewPostStore from "../entities/post/model/newPostStore"
 import useSelectedPostStore from "../entities/post/model/selectedPostStore"
 import useNewCommentStore from "../entities/comment/model/newCommentStore"
 import useSelectedCommentStore from "../entities/comment/model/selectedCommentStore"
@@ -52,10 +51,9 @@ const PostsManager = () => {
   const { posts, setPosts } = usePostStore()
   const { skip, limit, setSkip, setLimit, setTotal } = usePageStore()
   const { setSelectedUser } = useUserStore()
-  const { setShowAddDialog, setShowEditDialog, setShowPostDetailDialog, setShowUserModal } = usePostDialogStore()
+  const { setShowAddDialog, setShowPostDetailDialog, setShowUserModal } = usePostDialogStore()
   const { setShowAddCommentDialog, setShowEditCommentDialog } = useCommentDialogStore()
   const { setTags } = useTagStore()
-  const { newPost, setNewPost } = useNewPostStore()
   const { selectedPost, setSelectedPost } = useSelectedPostStore()
   const { selectedComment, setSelectedComment } = useSelectedCommentStore()
   const { newComment, setNewComment } = useNewCommentStore()
@@ -132,39 +130,6 @@ const PostsManager = () => {
       console.error("태그별 게시물 가져오기 오류:", error)
     }
     setLoading(false)
-  }
-
-  // 게시물 추가
-  const addPost = async () => {
-    try {
-      const response = await fetch(`${getMswUrl}/posts/add`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPost),
-      })
-      const data = await response.json()
-      setPosts([data, ...posts])
-      setShowAddDialog(false)
-      setNewPost({ title: "", body: "", userId: 1 })
-    } catch (error) {
-      console.error("게시물 추가 오류:", error)
-    }
-  }
-
-  // 게시물 업데이트
-  const updatePost = async () => {
-    try {
-      const response = await fetch(`${getMswUrl}/posts/${selectedPost?.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selectedPost),
-      })
-      const data = await response.json()
-      setPosts(posts.map((post) => (post.id === data.id ? data : post)))
-      setShowEditDialog(false)
-    } catch (error) {
-      console.error("게시물 업데이트 오류:", error)
-    }
   }
 
   // 게시물 삭제
@@ -392,10 +357,10 @@ const PostsManager = () => {
       </CardContent>
 
       {/* 게시물 추가 대화상자 */}
-      <PostFormDialog onSubmit={addPost} isEdit={false} />
+      <PostFormDialog isEdit={false} />
 
       {/* 게시물 수정 대화상자 */}
-      <PostFormDialog onSubmit={updatePost} isEdit={true} />
+      <PostFormDialog isEdit={true} />
 
       {/* 댓글 추가 대화상자 */}
       <CommentFormDialog
