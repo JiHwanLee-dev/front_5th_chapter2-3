@@ -39,6 +39,7 @@ import useSelectedPostStore from "../entities/post/model/selectedPostStore"
 import useNewCommentStore from "../entities/comment/model/newCommentStore"
 import useSelectedCommentStore from "../entities/comment/model/selectedCommentStore"
 import useCommentsStore from "../entities/comment/model/commentsStore"
+import useSelectedTag from "../entities/tag/model/selectedTagStore"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -54,8 +55,9 @@ const PostsManager = () => {
   const { tags, setTags } = useTagStore()
   const { newPost, setNewPost } = useNewPostStore()
   const { selectedPost, setSelectedPost } = useSelectedPostStore()
-
   const { selectedComment, setSelectedComment } = useSelectedCommentStore()
+  const { newComment, setNewComment } = useNewCommentStore()
+  const { selectedTag, setSelectedTag } = useSelectedTag()
 
   const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
   const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
@@ -63,13 +65,9 @@ const PostsManager = () => {
 
   const [loading, setLoading] = useState(false)
 
-  const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
-
   const [comments, setComments] = useState<Record<number, Comment[]>>({})
   // const { comments, setComments, setPostComments } = useCommentsStore()
   // const [selectedComment, setSelectedComment] = useState<Partial<Comment> | null>(null)
-
-  const { newComment, setNewComment } = useNewCommentStore()
 
   // URL 업데이트 함수
   const updateURL = () => {
@@ -346,12 +344,7 @@ const PostsManager = () => {
                 />
               </div>
             </div>
-            <TagSelect
-              selectedTag={selectedTag}
-              onTagSelect={setSelectedTag}
-              updateURL={updateURL}
-              fetchPostsByTag={fetchPostsByTag}
-            />
+            <TagSelect updateURL={updateURL} fetchPostsByTag={fetchPostsByTag} />
 
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-[180px]">
@@ -382,8 +375,6 @@ const PostsManager = () => {
           ) : (
             <PostList
               searchQuery={searchQuery}
-              selectedTag={selectedTag}
-              onTagSelect={setSelectedTag}
               onViewDetail={openPostDetail}
               onDelete={deletePost}
               onUserSelect={openUserModal}

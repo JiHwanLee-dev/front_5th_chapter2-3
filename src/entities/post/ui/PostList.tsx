@@ -6,6 +6,7 @@ import PostCard from "./PostCard"
 import usePostStore from "../model/postStore"
 import useSelectedPostStore from "../model/selectedPostStore"
 import usePostDialogStore from "../model/postDialog"
+import useSelectedTag from "../../tag/model/selectedTagStore"
 
 interface Author {
   id: number
@@ -15,9 +16,7 @@ interface Author {
 
 interface PostListProps {
   searchQuery: string
-  selectedTag: string
   highlightText: (text: string, highlight: string) => React.ReactNode
-  onTagSelect: (tag: string) => void
   onViewDetail: (post: Post) => void
   onDelete: (id: number) => void
   onUserSelect: (user: Author) => void
@@ -26,10 +25,8 @@ interface PostListProps {
 
 export const PostList: FC<PostListProps> = ({
   searchQuery,
-  selectedTag,
   loading = false,
   highlightText,
-  onTagSelect,
   onViewDetail,
   onDelete,
   onUserSelect,
@@ -38,6 +35,7 @@ export const PostList: FC<PostListProps> = ({
   const { posts } = usePostStore()
   const { setShowEditDialog } = usePostDialogStore()
   const { setSelectedPost } = useSelectedPostStore()
+  const { selectedTag, setSelectedTag } = useSelectedTag()
 
   const handleEdit = (post: Post) => {
     setSelectedPost(post)
@@ -64,7 +62,7 @@ export const PostList: FC<PostListProps> = ({
             searchQuery={searchQuery}
             selectedTag={selectedTag}
             highlightText={highlightText}
-            onTagSelect={onTagSelect}
+            onTagSelect={setSelectedTag}
             onViewDetail={onViewDetail}
             onEdit={handleEdit}
             onDelete={onDelete}
