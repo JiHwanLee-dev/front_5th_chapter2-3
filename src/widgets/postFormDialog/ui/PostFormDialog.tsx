@@ -2,21 +2,22 @@
 import { FC } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../shared/ui"
 import { PostForm } from "../../../features/postForm/ui/PostForm"
-import { PostFormData } from "../../../features/postForm/model/types"
 import usePostDialogStore from "../../../entities/post/model/postDialog"
+import useNewPostStore from "../../../entities/post/model/newPostStore"
+import useSelectedPostStore from "../../../entities/post/model/selectedPostStore"
 
 interface PostFormDialogProps {
-  formData: Partial<PostFormData> | null
-  onChangeFormData: (name: string, value: string | number) => void
   onSubmit?: () => void
   isEdit?: boolean
 }
 
-export const PostFormDialog: FC<PostFormDialogProps> = ({ formData, onChangeFormData, onSubmit, isEdit = false }) => {
+export const PostFormDialog: FC<PostFormDialogProps> = ({ onSubmit, isEdit = false }) => {
   const handleSubmit = () => {
     if (onSubmit) onSubmit()
   }
   const { showAddDialog, showEditDialog, setShowAddDialog, setShowEditDialog } = usePostDialogStore()
+  const { newPost, setNewPost } = useNewPostStore()
+  const { selectedPost, setSelectedPost } = useSelectedPostStore()
 
   return (
     <Dialog open={isEdit ? showEditDialog : showAddDialog} onOpenChange={isEdit ? setShowEditDialog : setShowAddDialog}>
@@ -24,7 +25,16 @@ export const PostFormDialog: FC<PostFormDialogProps> = ({ formData, onChangeForm
         <DialogHeader>
           <DialogTitle>{isEdit ? "게시물 수정" : "새 게시물 추가"}</DialogTitle>
         </DialogHeader>
-        <PostForm data={formData || {}} onChange={onChangeFormData} onSubmit={handleSubmit} isEdit={isEdit} />
+        <PostForm
+          data={isEdit ? selectedPost || {} : newPost || {}}
+          onChange={
+            isEdit
+              ? (name, value) => setSelectedPost({ ...selectedPost, [name]: value })
+              : (name, value) => setNewPost({ ...newPost, [name]: value })
+          }
+          onSubmit={handleSubmit}
+          isEdit={isEdit}
+        />
       </DialogContent>
     </Dialog>
   )

@@ -33,6 +33,9 @@ import usePageStore from "../shared/ui/pagination/model/pageStore"
 import usePostDialogStore from "../entities/post/model/postDialog"
 import useCommentDialogStore from "../entities/comment/model/commentDialogStore"
 import useTagStore from "../entities/tag/model/tagStore"
+import useNewPostStore from "../entities/post/model/newPostStore"
+import useSelectedPostStore from "../entities/post/model/selectedPostStore"
+
 const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -46,12 +49,13 @@ const PostsManager = () => {
   const { setShowAddCommentDialog, setShowEditCommentDialog } = useCommentDialogStore()
   const { tags, setTags } = useTagStore()
 
+  const { newPost, setNewPost } = useNewPostStore()
+  const { selectedPost, setSelectedPost } = useSelectedPostStore()
+
   const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
-  const [selectedPost, setSelectedPost] = useState<Partial<Post> | null>(null)
   const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
   const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc")
 
-  const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 })
   const [loading, setLoading] = useState(false)
 
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
@@ -138,7 +142,7 @@ const PostsManager = () => {
       const data = await response.json()
       setPosts([data, ...posts])
       setShowAddDialog(false)
-      setNewPost({ title: "", body: "", userId: 1 })
+      setNewPost({ id: 0, title: "", body: "", userId: 1 })
     } catch (error) {
       console.error("게시물 추가 오류:", error)
     }
@@ -147,7 +151,7 @@ const PostsManager = () => {
   // 게시물 업데이트
   const updatePost = async () => {
     try {
-      const response = await fetch(`/api/posts/${selectedPost.id}`, {
+      const response = await fetch(`/api/posts/${selectedPost?.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedPost),
@@ -161,7 +165,7 @@ const PostsManager = () => {
   }
 
   // 게시물 삭제
-  const deletePost = async (id) => {
+  const deletePost = async (id: number) => {
     try {
       await fetch(`/api/posts/${id}`, {
         method: "DELETE",
@@ -173,7 +177,7 @@ const PostsManager = () => {
   }
 
   // 댓글 가져오기
-  const fetchComments = async (postId) => {
+  const fetchComments = async (postId: number) => {
     if (comments[postId]) return // 이미 불러온 댓글이 있으면 다시 불러오지 않음
     try {
       const response = await fetch(`/api/comments/post/${postId}`)
@@ -207,10 +211,10 @@ const PostsManager = () => {
   // 댓글 업데이트
   const updateComment = async () => {
     try {
-      const response = await fetch(`/api/comments/${selectedComment.id}`, {
+      const response = await fetch(`/api/comments/${selectedComment?.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body: selectedComment.body }),
+        body: JSON.stringify({ body: selectedComment?.body }),
       })
       const data = await response.json()
       setComments((prev) => ({
@@ -224,7 +228,7 @@ const PostsManager = () => {
   }
 
   // 댓글 삭제
-  const deleteComment = async (id, postId) => {
+  const deleteComment = async (id: number, postId: number) => {
     try {
       await fetch(`/api/comments/${id}`, {
         method: "DELETE",
@@ -239,7 +243,7 @@ const PostsManager = () => {
   }
 
   // 댓글 좋아요
-  const likeComment = async (id, postId) => {
+  const likeComment = async (id: number, postId: number) => {
     try {
       const response = await fetch(`/api/comments/${id}`, {
         method: "PATCH",
@@ -259,7 +263,7 @@ const PostsManager = () => {
   }
 
   // 게시물 상세 보기
-  const openPostDetail = (post) => {
+  const openPostDetail = (post: Post) => {
     setSelectedPost(post)
     fetchComments(post.id)
     setShowPostDetailDialog(true)
@@ -395,20 +399,10 @@ const PostsManager = () => {
       </CardContent>
 
       {/* 게시물 추가 대화상자 */}
-      <PostFormDialog
-        formData={newPost}
-        onChangeFormData={(name, value) => setNewPost({ ...newPost, [name]: value })}
-        onSubmit={addPost}
-        isEdit={false}
-      />
+      <PostFormDialog onSubmit={addPost} isEdit={false} />
 
       {/* 게시물 수정 대화상자 */}
-      <PostFormDialog
-        formData={selectedPost}
-        onChangeFormData={(name, value) => setSelectedPost({ ...selectedPost, [name]: value })}
-        onSubmit={updatePost}
-        isEdit={true}
-      />
+      <PostFormDialog onSubmit={updatePost} isEdit={true} />
 
       {/* 댓글 추가 대화상자 */}
       <CommentFormDialog
