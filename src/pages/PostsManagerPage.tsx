@@ -423,8 +423,6 @@ const PostsManager = () => {
 
       {/* 댓글 추가 대화상자 */}
       <CommentFormDialog
-        open={showAddCommentDialog}
-        onOpenChange={setShowAddCommentDialog}
         title="새 댓글 추가"
         formData={newComment}
         onChangeFormData={(name, value) => setNewComment({ ...newComment, [name]: value })}
@@ -434,8 +432,6 @@ const PostsManager = () => {
 
       {/* 댓글 수정 대화상자 */}
       <CommentFormDialog
-        open={showEditCommentDialog}
-        onOpenChange={setShowEditCommentDialog}
         title="댓글 수정"
         formData={selectedComment ? { body: selectedComment.body || "" } : { body: "" }}
         onChangeFormData={(name, value) => setSelectedComment({ ...selectedComment, [name]: value })}

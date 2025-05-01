@@ -3,10 +3,9 @@ import { FC } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../shared/ui"
 import { CommentForm } from "../../../features/commentForm/ui/CommentForm"
 import { CommentFormData } from "../../../features/commentForm/model/types"
+import useCommentDialogStore from "../../../entities/comment/model/commentDialogStore"
 
 interface CommentFormDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
   title: string
   formData: Partial<CommentFormData>
   onChangeFormData: (name: string, value: string | number) => void
@@ -15,16 +14,19 @@ interface CommentFormDialogProps {
 }
 
 export const CommentFormDialog: FC<CommentFormDialogProps> = ({
-  open,
-  onOpenChange,
   title,
   formData,
   onChangeFormData,
   onSubmit,
   isEdit = false,
 }) => {
+  const { showAddCommentDialog, showEditCommentDialog, setShowAddCommentDialog, setShowEditCommentDialog } =
+    useCommentDialogStore()
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={isEdit ? showEditCommentDialog : showAddCommentDialog}
+      onOpenChange={isEdit ? setShowEditCommentDialog : setShowAddCommentDialog}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
