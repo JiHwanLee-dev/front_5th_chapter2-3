@@ -4,10 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../share
 import { CommentList } from "../../../entities/comment/ui"
 import { Post } from "../../../entities/post/model/types"
 import { Comment } from "../../../entities/comment/model/types"
+import usePostDialogStore from "../../../entities/post/model/postDialog"
 
 interface PostDetailDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
   post: Partial<Post> | null
   comments: Comment[] | undefined
   searchQuery: string
@@ -19,8 +18,6 @@ interface PostDetailDialogProps {
 }
 
 export const PostDetailDialog: FC<PostDetailDialogProps> = ({
-  open,
-  onOpenChange,
   post,
   comments,
   searchQuery,
@@ -30,10 +27,11 @@ export const PostDetailDialog: FC<PostDetailDialogProps> = ({
   onEditComment,
   onDeleteComment,
 }) => {
-  if (!post) return null
+  const { showPostDetailDialog, setShowPostDetailDialog } = usePostDialogStore()
 
+  if (!post) return null
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={showPostDetailDialog} onOpenChange={setShowPostDetailDialog}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>{highlightText(post.title || "", searchQuery)}</DialogTitle>

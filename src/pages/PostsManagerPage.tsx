@@ -445,8 +445,6 @@ const PostsManager = () => {
 
       {/* 게시물 상세 보기 대화상자 */}
       <PostDetailDialog
-        open={showPostDetailDialog}
-        onOpenChange={setShowPostDetailDialog}
         post={selectedPost}
         comments={selectedPost?.id !== undefined ? (comments[selectedPost.id] ?? []) : []}
         searchQuery={searchQuery}
