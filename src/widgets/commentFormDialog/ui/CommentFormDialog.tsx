@@ -4,6 +4,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../share
 import { CommentForm } from "../../../features/commentForm/ui/CommentForm"
 import { CommentFormData } from "../../../features/commentForm/model/types"
 import useCommentDialogStore from "../../../entities/comment/model/commentDialogStore"
+import useSelectedCommentStore from "../../../entities/comment/model/selectedCommentStore"
+import useNewCommentStore from "../../../entities/comment/model/newCommentStore"
 
 interface CommentFormDialogProps {
   title: string
@@ -22,6 +24,9 @@ export const CommentFormDialog: FC<CommentFormDialogProps> = ({
 }) => {
   const { showAddCommentDialog, showEditCommentDialog, setShowAddCommentDialog, setShowEditCommentDialog } =
     useCommentDialogStore()
+  const { selectedComment, setSelectedComment } = useSelectedCommentStore()
+  const { newComment, setNewComment } = useNewCommentStore()
+
   return (
     <Dialog
       open={isEdit ? showEditCommentDialog : showAddCommentDialog}

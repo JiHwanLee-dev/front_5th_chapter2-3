@@ -24,6 +24,7 @@ import { UserDetailDialog } from "../widgets/useDetailDialog/ui/UserDetailDialog
 
 import { Comment } from "../entities/comment/model/types"
 import { Post } from "../entities/post/model/types"
+import { CommentFormData } from "../entities/comment/model/types"
 
 import { usePostsWithUsers } from "../features/post/hooks/usePostsWithUsers"
 import { useTagsQuery } from "../features/tag/hooks/useTagsQuery"
@@ -35,6 +36,8 @@ import useCommentDialogStore from "../entities/comment/model/commentDialogStore"
 import useTagStore from "../entities/tag/model/tagStore"
 import useNewPostStore from "../entities/post/model/newPostStore"
 import useSelectedPostStore from "../entities/post/model/selectedPostStore"
+import useNewCommentStore from "../entities/comment/model/newCommentStore"
+import useSelectedCommentStore from "../entities/comment/model/selectedCommentStore"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -51,6 +54,8 @@ const PostsManager = () => {
   const { newPost, setNewPost } = useNewPostStore()
   const { selectedPost, setSelectedPost } = useSelectedPostStore()
 
+  const { selectedComment, setSelectedComment } = useSelectedCommentStore()
+
   const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
   const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
   const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc")
@@ -59,8 +64,11 @@ const PostsManager = () => {
 
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
   const [comments, setComments] = useState<Record<number, Comment[]>>({})
-  const [selectedComment, setSelectedComment] = useState<Partial<Comment> | null>(null)
-  const [newComment, setNewComment] = useState<{ body: string; postId: number | null; userId: number }>({
+
+  // const [selectedComment, setSelectedComment] = useState<Partial<Comment> | null>(null)
+
+  // const { newComment, setNewComment } = useNewCommentStore()
+  const [newComment, setNewComment] = useState<CommentFormData>({
     body: "",
     postId: null,
     userId: 1,
