@@ -8,7 +8,13 @@ interface NewCommentStore {
 
 const useNewCommentStore = create<NewCommentStore>((set) => ({
   newComment: { body: "", postId: null, userId: 1 },
-  setNewComment: (newComment: CommentFormData) => set({ newComment }),
+
+  setNewComment: (newComment: ((prev: CommentFormData) => CommentFormData) | CommentFormData) => {
+    set((prev) => ({
+      ...prev,
+      newComment: typeof newComment === "function" ? newComment(prev.newComment) : newComment,
+    }))
+  },
 }))
 
 export default useNewCommentStore

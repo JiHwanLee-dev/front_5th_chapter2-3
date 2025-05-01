@@ -67,16 +67,9 @@ const PostsManager = () => {
 
   const [comments, setComments] = useState<Record<number, Comment[]>>({})
   // const { comments, setComments, setPostComments } = useCommentsStore()
-
   // const [selectedComment, setSelectedComment] = useState<Partial<Comment> | null>(null)
 
-  // 밑에 store사용시 댓글 추가가 안됨.. 나중에 확인
-  // const { newComment, setNewComment } = useNewCommentStore()
-  const [newComment, setNewComment] = useState<CommentFormData>({
-    body: "",
-    postId: null,
-    userId: 1,
-  })
+  const { newComment, setNewComment } = useNewCommentStore()
 
   // URL 업데이트 함수
   const updateURL = () => {
